@@ -31,6 +31,18 @@ namespace Common.Specifications
             return Specification.Create<T>(SpecFunc);
         }
 
+        ISpecification<T> Not(string falseMessage)
+        {
+            IExecutionResult SpecFunc(T target)
+            {
+                var thisResult = Check(target);
+                if (thisResult.IsSuccess) return ExecutionResult.Failed(falseMessage);
+                return ExecutionResult.Success();
+            }
+
+            return Specification.Create<T>(SpecFunc);
+        }
+
         public static ISpecification<T> operator &(ISpecification<T> left, ISpecification<T> right) => left.And(right);
 
         public static ISpecification<T> operator |(ISpecification<T> left, ISpecification<T> right) => left.Or(right);
@@ -44,16 +56,12 @@ namespace Common.Specifications
         {
             IExecutionResult SpecFunc(T target)
             {
-                if (predicate(target)) return Success();
-                return Failed(falseMessage);
+                if (predicate(target)) return ExecutionResult.Success();
+                return ExecutionResult.Failed(falseMessage);
             }
 
             return Create<T>(SpecFunc);
         }
-
-        public static IExecutionResult Success() => ExecutionResult.Success();
-
-        public static IExecutionResult Failed(params string[] errors) => ExecutionResult.Failure(errors);
 
         private sealed class Spec<T> : ISpecification<T>
         {

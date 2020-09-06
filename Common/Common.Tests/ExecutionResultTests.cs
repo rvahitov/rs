@@ -12,7 +12,7 @@ namespace Common.Tests
             var executionResult = ExecutionResult.Success();
             Assert.True(executionResult.IsSuccess);
             Assert.Empty(executionResult.Errors);
-            executionResult = ExecutionResult.Failure(new[] {"Error"});
+            executionResult = ExecutionResult.Failed(new[] {"Error"});
             Assert.False(executionResult.IsSuccess);
             Assert.NotEmpty(executionResult.Errors);
 
@@ -20,7 +20,7 @@ namespace Common.Tests
             Assert.True(intExecutionResult.IsSuccess);
             Assert.Empty(intExecutionResult.Errors);
             Assert.Equal(10, intExecutionResult.SuccessValue);
-            intExecutionResult = ExecutionResult.Failure<int>("Error");
+            intExecutionResult = ExecutionResult.Failed<int>("Error");
             Assert.False(intExecutionResult.IsSuccess);
             Assert.NotEmpty(intExecutionResult.Errors);
         }
@@ -28,12 +28,12 @@ namespace Common.Tests
         [Fact]
         public void CreateFailureShouldFail()
         {
-            Assert.Throws<ArgumentNullException>(() => ExecutionResult.Failure(null));
-            Assert.Throws<ArgumentException>(() => ExecutionResult.Failure());
-            Assert.Throws<ArgumentException>(() => ExecutionResult.Failure(Array.Empty<string>()));
-            Assert.Throws<ArgumentNullException>(() => ExecutionResult.Failure<int>(null));
-            Assert.Throws<ArgumentException>(() => ExecutionResult.Failure<int>());
-            Assert.Throws<ArgumentException>(() => ExecutionResult.Failure<int>(Array.Empty<string>()));
+            Assert.Throws<ArgumentNullException>(() => ExecutionResult.Failed(null));
+            Assert.Throws<ArgumentException>(() => ExecutionResult.Failed());
+            Assert.Throws<ArgumentException>(() => ExecutionResult.Failed(Array.Empty<string>()));
+            Assert.Throws<ArgumentNullException>(() => ExecutionResult.Failed<int>(null));
+            Assert.Throws<ArgumentException>(() => ExecutionResult.Failed<int>());
+            Assert.Throws<ArgumentException>(() => ExecutionResult.Failed<int>(Array.Empty<string>()));
         }
     }
 }

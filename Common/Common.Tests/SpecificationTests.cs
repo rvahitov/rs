@@ -1,3 +1,4 @@
+using Common.ExecutionResults;
 using Common.Specifications;
 using Xunit;
 
@@ -10,8 +11,8 @@ namespace Common.Tests
         {
             var spec = Specification.Create<int>(i =>
             {
-                if (i >= 0) return Specification.Success();
-                return Specification.Failed("NUmber is negative");
+                if (i >= 0) return ExecutionResult.Success();
+                return ExecutionResult.Failed("Number is negative");
             });
             var result = spec.Check(1);
 
@@ -55,6 +56,20 @@ namespace Common.Tests
             Assert.True(result.IsSuccess);
             Assert.Empty(result.Errors);
             result = spec3.Check("FizzBuzz");
+            Assert.False(result.IsSuccess);
+            Assert.NotEmpty(result.Errors);
+        }
+
+        [Fact]
+        public void TestSpecificationNot()
+        {
+            var spec = Specification.Create<int>(i => i > 0, "Number is negative");
+            ISpecification<int> notSpec = spec.Not("Number is positive");
+            var result = notSpec.Check(-5);
+            Assert.True(result.IsSuccess);
+            Assert.Empty(result.Errors);
+
+            result = notSpec.Check(45);
             Assert.False(result.IsSuccess);
             Assert.NotEmpty(result.Errors);
         }

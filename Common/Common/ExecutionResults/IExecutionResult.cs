@@ -20,14 +20,14 @@ namespace Common.ExecutionResults
         public static IExecutionResult Success() => new Result(Enumerable.Empty<string>());
 
         public static IExecutionResult<T> Success<T>(T value) => new Result<T>(value);
-        public static IExecutionResult Failure(params string[] errors)
+        public static IExecutionResult Failed(params string[] errors)
         {
             if (errors == null) throw new ArgumentNullException(nameof(errors));
             if (errors.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(errors));
             return new Result(errors);
         }
 
-        public static IExecutionResult<T> Failure<T>(params string[] errors)
+        public static IExecutionResult<T> Failed<T>(params string[] errors)
         {
             if (errors == null) throw new ArgumentNullException(nameof(errors));
             if (errors.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(errors));

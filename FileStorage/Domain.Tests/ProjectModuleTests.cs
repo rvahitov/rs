@@ -52,6 +52,8 @@ namespace Domain.Tests
         {
             var projectName = new ProjectName("Project1");
             var projectFolder = new ProjectFolder("C:\\Project1");
+            var state = new ProjectState();
+            
         }
     }
 }
