@@ -4,15 +4,10 @@ using Xunit;
 
 namespace Domain.Tests
 {
-    /*
-     У меня есть ProjectModule.
-     ProjectModule имеет класс состояния проекта.
-     Когда я проецирую комманду Create на состояние
-     */
     public class ProjectModuleTests
     {
         [Fact]
-        public void TestCreateProjectNameShouldTrhow()
+        public void TestCreateProjectNameShouldThrow()
         {
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentException>(() => new ProjectName(null));
@@ -50,6 +45,13 @@ namespace Domain.Tests
             Assert.False(projectFolder != new ProjectFolder(path));
             Assert.Equal(path, projectFolder.Path);
             Assert.Equal(projectFolder.GetHashCode(), new ProjectFolder(path).GetHashCode());
+        }
+
+        [Fact]
+        public void StateManagerShouldReturnCreatedEventOnCreateCommand()
+        {
+            var projectName = new ProjectName("Project1");
+            var projectFolder = new ProjectFolder("C:\\Project1");
         }
     }
 }

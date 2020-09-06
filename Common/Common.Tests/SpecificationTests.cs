@@ -30,7 +30,7 @@ namespace Common.Tests
             var spec2 = Specification.Create<int>(i => i % 2 == 0, "Number is odd");
             var spec3 = spec1 & spec2;
 
-            ISpecificationResult result = spec3.Check(-1);
+            var result = spec3.Check(-1);
             Assert.False(result.IsSuccess);
             Assert.NotEmpty(result.Errors);
 
@@ -46,7 +46,7 @@ namespace Common.Tests
         {
             var spec1 = Specification.Create<string>(s => s == "Fizz", "Invalid string");
             var spec2 = Specification.Create<string>(s => s == "Buzz", "Invalid string");
-            ISpecification<string> spec3 = spec1 | spec2;
+            var spec3 = spec1 | spec2;
 
             var result = spec3.Check("Fizz");
             Assert.True(result.IsSuccess);
