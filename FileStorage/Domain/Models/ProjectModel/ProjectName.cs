@@ -1,9 +1,12 @@
-﻿namespace Domain.Models.ProjectModel
+﻿using System;
+
+namespace Domain.Models.ProjectModel
 {
     public sealed class ProjectName
     {
         public ProjectName(string value)
         {
+            if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
             Value = value;
         }
 
