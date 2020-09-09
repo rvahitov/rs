@@ -50,7 +50,7 @@ namespace Domain.SpecFlow.UnitTests
             "After that when I ask for project"
                 .x( () =>
                 {
-                    var query = new GetProject();
+                    var query = new GetProject(projectName);
                     projectAggregate.Tell( query, TestActor );
                 } );
 
@@ -89,7 +89,7 @@ namespace Domain.SpecFlow.UnitTests
             "After that when I ask for project"
                 .x( () =>
                 {
-                    var query = new GetProject();
+                    var query = new GetProject(projectName);
                     projectAggregate.Tell( query, TestActor );
                 } );
 
