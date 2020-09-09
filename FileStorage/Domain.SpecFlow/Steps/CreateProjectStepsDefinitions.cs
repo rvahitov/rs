@@ -1,50 +1,41 @@
 ﻿using System.Threading.Tasks;
-using Domain.Models.ProjectModel;
-using Domain.Models.ProjectModel.Commands;
 using TechTalk.SpecFlow;
-using Xunit;
 
 namespace Domain.SpecFlow.Steps
 {
-    [Binding]
+    [ Binding ]
     public class CreateProjectStepsDefinitions
     {
         private readonly ScenarioContext _scenarioContext;
 
-        private CreateProject _command;
-        private ProjectManager _manager;
-
-        public CreateProjectStepsDefinitions(ScenarioContext scenarioContext)
+        public CreateProjectStepsDefinitions( ScenarioContext scenarioContext )
         {
             _scenarioContext = scenarioContext;
         }
 
-        [Given("необходимо создать проект (.*) с папкой (.*)")]
-        public void NeedToCreateProject(string projectNameValue, string projectDirectoryPath)
+        [ Given( "необходимо создать проект (.*) с папкой (.*)" ) ]
+        public void NeedToCreateProject( string projectNameValue, string projectDirectoryPath )
         {
-            _command = new CreateProject(new ProjectName(projectNameValue), new ProjectFolder(projectDirectoryPath));
+            _scenarioContext.Pending();
         }
 
-        [Given("в системе отсутствует проект с таким именем")]
+        [ Given( "в системе отсутствует проект с таким именем" ) ]
         public void AndSystemDoesNotHaveProjectWithName()
         {
-            _manager = new ProjectManager();
+            _scenarioContext.Pending();
         }
 
-        [When("я отправляю в систему команду CreateProject")]
+        [ When( "я отправляю в систему команду CreateProject" ) ]
         public void SendCreateProjectCommand()
         {
-            _manager.SendCommand(_command);
+            _scenarioContext.Pending();
         }
 
-        [Then("в системе появляется новый проект с именем (.*) и с папкой (.*)")]
-        public async Task SystemShouldContainProject(string projectNameValue, string projectDirectoryPath)
+        [ Then( "в системе появляется новый проект с именем (.*) и с папкой (.*)" ) ]
+        public Task SystemShouldContainProject( string projectNameValue, string projectDirectoryPath )
         {
-            var project = await _manager.GetProject(_command.ProjectName);
-            Assert.NotNull(project);
-            Assert.Equal(_command.ProjectName, project.Name);
-            Assert.Equal(_command.ProjectFolder, project.Folder);
             _scenarioContext.Pending();
+            return Task.CompletedTask;
         }
     }
 }
