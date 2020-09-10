@@ -32,6 +32,12 @@ namespace Domain.SpecFlow.Steps
             Assert.False(result);
         }
 
+        [Given("в системе уже есть проект с именем (.*) и с папкой (.*)")]
+        public void AndSystemAlreadyHaveProject(string projectNameValue, string projectFolderPath)
+        {
+            _application.CreateProject( new ProjectName( projectNameValue ), new ProjectFolder( projectFolderPath ) );
+        }
+
         [When("я отправляю в систему команду CreateProject")]
         public void SendCreateProjectCommand()
         {
@@ -47,6 +53,17 @@ namespace Domain.SpecFlow.Steps
             Assert.NotNull(project);
             Assert.Equal(_projectName, project.Name);
             Assert.Equal(_projectFolder, project.Folder);
+        }
+
+        [Then("в системе не должен появлятся новый проект с данным именем и папкой")]
+        public async Task SystemShouldNotContainProjectDuplicate()
+        {
+            var getResult = await _application.GetProject(_projectName);
+            Assert.True(getResult.IsSuccess);
+            var project = getResult.SuccessValue;
+            Assert.NotNull(project);
+            Assert.Equal(_projectName, project.Name);
+            Assert.NotEqual(_projectFolder, project.Folder);
         }
     }
 }
