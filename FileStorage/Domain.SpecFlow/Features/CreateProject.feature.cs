@@ -89,7 +89,7 @@ namespace Domain.SpecFlow.Features
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Создание проекта с уникальным именем", null, tagsOfScenario, argumentsOfScenario);
-#line 14
+#line 12
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -109,16 +109,16 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 15
+#line 13
  testRunner.Given("необходимо создать проект Proect1 с папкой C:\\Temp\\Project1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Допустим ");
 #line hidden
-#line 16
+#line 14
  testRunner.And("в системе отсутствует проект с таким именем", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "И ");
 #line hidden
-#line 17
+#line 15
  testRunner.When("я отправляю в систему команду CreateProject", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Когда ");
 #line hidden
-#line 18
+#line 16
  testRunner.Then("в системе появляется новый проект с именем Project1 и с папкой C:\\Temp\\Project1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Тогда ");
 #line hidden
             }

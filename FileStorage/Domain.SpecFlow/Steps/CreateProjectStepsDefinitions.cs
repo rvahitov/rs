@@ -1,41 +1,52 @@
 ﻿using System.Threading.Tasks;
+using Domain.Application;
+using Domain.Models.ProjectModel;
 using TechTalk.SpecFlow;
+using Xunit;
 
 namespace Domain.SpecFlow.Steps
 {
-    [ Binding ]
+    [Binding]
     public class CreateProjectStepsDefinitions
     {
-        private readonly ScenarioContext _scenarioContext;
+        private readonly FileStorageApplication _application;
+        private ProjectName _projectName = null;
+        private ProjectFolder _projectFolder = null;
 
-        public CreateProjectStepsDefinitions( ScenarioContext scenarioContext )
+        public CreateProjectStepsDefinitions(FileStorageApplication application)
         {
-            _scenarioContext = scenarioContext;
+            _application = application;
         }
 
-        [ Given( "необходимо создать проект (.*) с папкой (.*)" ) ]
-        public void NeedToCreateProject( string projectNameValue, string projectDirectoryPath )
+        [Given("необходимо создать проект (.*) с папкой (.*)")]
+        public void NeedToCreateProject(string projectNameValue, string projectFolderPath)
         {
-            _scenarioContext.Pending();
+            _projectName = new ProjectName(projectNameValue);
+            _projectFolder = new ProjectFolder(projectFolderPath);
         }
 
-        [ Given( "в системе отсутствует проект с таким именем" ) ]
+        [Given("в системе отсутствует проект с таким именем")]
         public void AndSystemDoesNotHaveProjectWithName()
         {
-            _scenarioContext.Pending();
+            Assert.False(_application.ProjectExists(_projectName));
         }
 
-        [ When( "я отправляю в систему команду CreateProject" ) ]
+        [When("я отправляю в систему команду CreateProject")]
         public void SendCreateProjectCommand()
         {
-            _scenarioContext.Pending();
+            _application.CreateProject(_projectName, _projectFolder);
         }
 
-        [ Then( "в системе появляется новый проект с именем (.*) и с папкой (.*)" ) ]
-        public Task SystemShouldContainProject( string projectNameValue, string projectDirectoryPath )
+        [Then("в системе появляется новый проект с именем (.*) и с папкой (.*)")]
+        public async Task SystemShouldContainProject(string projectNameValue, string projectDirectoryPath)
         {
-            _scenarioContext.Pending();
-            return Task.CompletedTask;
+            var projectName = new ProjectName(projectNameValue);
+            var getResult = await _application.GetProject(projectName);
+            Assert.True(getResult.IsSuccess);
+            var project = getResult.SuccessValue;
+            Assert.NotNull(project);
+            Assert.Equal(projectName, project.Name);
+            Assert.Equal(new ProjectFolder(projectDirectoryPath), project.Folder);
         }
     }
 }
