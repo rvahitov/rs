@@ -10,8 +10,8 @@ namespace Domain.SpecFlow.Steps
     public class CreateProjectStepsDefinitions
     {
         private readonly FileStorageApplication _application;
-        private ProjectName _projectName = null;
-        private ProjectFolder _projectFolder = null;
+        private          ProjectName            _projectName;
+        private          ProjectFolder          _projectFolder;
 
         public CreateProjectStepsDefinitions(FileStorageApplication application)
         {
@@ -26,9 +26,10 @@ namespace Domain.SpecFlow.Steps
         }
 
         [Given("в системе отсутствует проект с таким именем")]
-        public void AndSystemDoesNotHaveProjectWithName()
+        public async Task AndSystemDoesNotHaveProjectWithName()
         {
-            Assert.False(_application.ProjectExists(_projectName));
+            var result = await _application.ProjectExists( _projectName );
+            Assert.False(result);
         }
 
         [When("я отправляю в систему команду CreateProject")]
@@ -37,16 +38,15 @@ namespace Domain.SpecFlow.Steps
             _application.CreateProject(_projectName, _projectFolder);
         }
 
-        [Then("в системе появляется новый проект с именем (.*) и с папкой (.*)")]
-        public async Task SystemShouldContainProject(string projectNameValue, string projectDirectoryPath)
+        [Then("в системе появляется новый проект с данным именем и папкой")]
+        public async Task SystemShouldContainProject()
         {
-            var projectName = new ProjectName(projectNameValue);
-            var getResult = await _application.GetProject(projectName);
+            var getResult = await _application.GetProject(_projectName);
             Assert.True(getResult.IsSuccess);
             var project = getResult.SuccessValue;
             Assert.NotNull(project);
-            Assert.Equal(projectName, project.Name);
-            Assert.Equal(new ProjectFolder(projectDirectoryPath), project.Folder);
+            Assert.Equal(_projectName, project.Name);
+            Assert.Equal(_projectFolder, project.Folder);
         }
     }
 }

@@ -20,5 +20,14 @@ namespace Domain.SpecFlow.UnitTests
             application.Tell(new GetProject(new ProjectName("Prj1")));
             ExpectMsg<IExecutionResult<Project>>();
         }
+
+        [Fact]
+        public void ShouldNotHandleUnknownMessage()
+        {
+            var application = Sys.ActorOf(Props.Create<ApplicationActor>(), "Application");
+            application.Tell( "Some string message", TestActor );
+            var res = ExpectMsg<IExecutionResult>();
+            Assert.False( res.IsSuccess );
+        }
     }
 }

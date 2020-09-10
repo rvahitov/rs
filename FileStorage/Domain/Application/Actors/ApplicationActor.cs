@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Common.ExecutionResults;
 using Domain.Models.ProjectModel.Actors;
 using Domain.Models.ProjectModel.Commands;
 using Domain.Models.ProjectModel.Queries;
@@ -7,26 +8,27 @@ namespace Domain.Application.Actors
 {
     internal class ApplicationActor : UntypedActor
     {
-        private readonly IActorRef _projectAggregateManager;
+        private IActorRef _projectAggregateManager = Nobody.Instance;
 
-        public ApplicationActor()
+        protected override void PreStart()
         {
             _projectAggregateManager =
-                Context.ActorOf(Props.Create(() => new ProjectAggregateManager()), "ProjectManager");
+                Context.ActorOf( Props.Create( () => new ProjectAggregateManager() ), "ProjectManager" );
         }
 
-        protected override void OnReceive(object message)
+        protected override void OnReceive( object message )
         {
-            switch (message)
+            switch ( message )
             {
-                case IProjectCommand cmd:
-                    _projectAggregateManager.Forward(cmd);
+                case IProjectCommand cmd :
+                    _projectAggregateManager.Forward( cmd );
                     break;
-                case GetProject query:
-                    _projectAggregateManager.Forward(query);
+                case GetProject query :
+                    _projectAggregateManager.Forward( query );
                     break;
-                default:
-                    Unhandled(message);
+                default :
+                    Unhandled( message );
+                    Sender.Tell( ExecutionResult.Failed( "Unknown message" ) );
                     break;
             }
         }

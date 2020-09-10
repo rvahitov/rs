@@ -110,7 +110,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 13
- testRunner.Given("необходимо создать проект Proect1 с папкой C:\\Temp\\Project1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Допустим ");
+ testRunner.Given("необходимо создать проект Project1 с папкой C:\\Temp\\Project1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Допустим ");
 #line hidden
 #line 14
  testRunner.And("в системе отсутствует проект с таким именем", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "И ");
@@ -119,7 +119,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.When("я отправляю в систему команду CreateProject", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Когда ");
 #line hidden
 #line 16
- testRunner.Then("в системе появляется новый проект с именем Project1 и с папкой C:\\Temp\\Project1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Тогда ");
+ testRunner.Then("в системе появляется новый проект с данным именем и папкой", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Тогда ");
 #line hidden
             }
             this.ScenarioCleanup();
