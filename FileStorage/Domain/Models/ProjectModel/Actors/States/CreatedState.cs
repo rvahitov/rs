@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Common.ExecutionResults;
+using Common.Specifications;
 using Domain.Models.ProjectModel.Commands;
 using Domain.Models.ProjectModel.Events;
 
@@ -15,13 +17,28 @@ namespace Domain.Models.ProjectModel.Actors.States
         {
             _projectName   = projectName   ?? throw new ArgumentNullException( nameof( projectName ) );
             _projectFolder = projectFolder ?? throw new ArgumentNullException( nameof( projectFolder ) );
+
+            CommandSpecification = Specification.Create<IProjectCommand>( cmd => ! (cmd is CreateProject), $"Project {projectName.Value} already exists" );
         }
+
+        public ISpecification<IProjectCommand> CommandSpecification { get; }
 
         public Project GetProject() => new Project( _projectName, _projectFolder );
 
-        public IExecutionResult<IEnumerable<IProjectEvent>> GetEventsForCommand( IProjectCommand command ) =>
-            ExecutionResult.Failed<IEnumerable<IProjectEvent>>( "Not implemented" );
+        public IExecutionResult<IEnumerable<IProjectEvent>> RunCommand( IProjectCommand command )
+        {
+            return RunAddFile( (AddProjectFile) command );
+        }
 
-        public IProjectState Apply( IProjectEvent projectEvent ) => this;
+        private IExecutionResult<IEnumerable<IProjectEvent>> RunAddFile( AddProjectFile command )
+        {
+            var directoryPah = Path.GetFullPath( _projectFolder.Path );
+            if ( ! Directory.Exists( directoryPah ) ) Directory.CreateDirectory( directoryPah );
+            var filePath = Path.Combine( directoryPah, $"{_projectName.Value}_{1}" );
+            File.WriteAllBytes( filePath, command.FileContent.ToArray() );
+            return ExecutionResult.Success( new IProjectEvent[] { new ProjectFileAdded() } );
+        }
+
+        public IProjectState ApplyEvent( IProjectEvent projectEvent ) => this;
     }
 }

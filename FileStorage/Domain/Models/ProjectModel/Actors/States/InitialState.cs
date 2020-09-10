@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Common.ExecutionResults;
 using Common.Specifications;
 using Domain.Models.ProjectModel.Commands;
@@ -9,30 +8,26 @@ namespace Domain.Models.ProjectModel.Actors.States
 {
     internal sealed class InitialState : IProjectState
     {
-        private readonly ISpecification<IProjectCommand> _commandSpecification;
-
         public InitialState()
         {
-            _commandSpecification = Specification.Create<IProjectCommand>( cmd => cmd is CreateProject, "Project does not exist" );
+            CommandSpecification = Specification.Create<IProjectCommand>( cmd => cmd is CreateProject, "Project does not exist" );
         }
+
+        public ISpecification<IProjectCommand> CommandSpecification { get; }
 
         public Project? GetProject() => null;
 
-        public IExecutionResult<IEnumerable<IProjectEvent>> GetEventsForCommand( IProjectCommand command )
+        public IExecutionResult<IEnumerable<IProjectEvent>> RunCommand( IProjectCommand command )
         {
-            var specificationResult = _commandSpecification.Check( command ).Map( () => (CreateProject) command )
-                                                           .Map( cmd =>
-                                                           {
-                                                               var events = new IProjectEvent[] { new ProjectCreated( cmd.ProjectName, cmd.ProjectFolder ) };
-                                                               return events.AsEnumerable();
-                                                           } );
-            return specificationResult;
+            var create = (CreateProject) command;
+            return ExecutionResult.Success( new IProjectEvent[] { new ProjectCreated( create.ProjectName, create.ProjectFolder ) } );
         }
 
-        public IProjectState Apply( IProjectEvent projectEvent )
+        public IProjectState ApplyEvent( IProjectEvent projectEvent )
         {
             if ( projectEvent is ProjectCreated created ) return ProjectState.Created( created.ProjectName, created.ProjectFolder );
             return this;
         }
+
     }
 }

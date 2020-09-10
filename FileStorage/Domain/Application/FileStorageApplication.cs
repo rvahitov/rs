@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Common.ExecutionResults;
 using Domain.Models.ProjectModel;
@@ -33,6 +34,11 @@ namespace Domain.Application
             var query  = new GetProject( projectName );
             var result = await _applicationActor.Ask<IExecutionResult<Project?>>( query ).ConfigureAwait( false );
             return result;
+        }
+
+        public void AddProjectFile( ProjectName projectName, ReadOnlyMemory<byte> fileContent )
+        {
+            _applicationActor.Tell( new AddProjectFile(projectName, fileContent) );
         }
     }
 }

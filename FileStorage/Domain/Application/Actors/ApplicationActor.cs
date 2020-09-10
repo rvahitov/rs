@@ -1,8 +1,7 @@
 ﻿using Akka.Actor;
-using Common.ExecutionResults;
+using Domain.Models.ProjectModel;
 using Domain.Models.ProjectModel.Actors;
-using Domain.Models.ProjectModel.Commands;
-using Domain.Models.ProjectModel.Queries;
+using Domain.Models.ProjectModel.Infrastructure;
 
 namespace Domain.Application.Actors
 {
@@ -18,18 +17,14 @@ namespace Domain.Application.Actors
 
         protected override void OnReceive( object message )
         {
-            switch ( message )
+            if ( message is IHaveProjectName )
             {
-                case IProjectCommand cmd :
-                    _projectAggregateManager.Forward( cmd );
-                    break;
-                case GetProject query :
-                    _projectAggregateManager.Forward( query );
-                    break;
-                default :
-                    Unhandled( message );
-                    Sender.Tell( ExecutionResult.Failed( "Unknown message" ) );
-                    break;
+                _projectAggregateManager.Forward( message );
+            }
+            else
+            {
+                Unhandled( message );
+                Sender.Tell( CommonFailures.UnknownMessage );
             }
         }
     }

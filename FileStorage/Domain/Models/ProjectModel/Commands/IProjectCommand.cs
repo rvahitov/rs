@@ -1,7 +1,6 @@
 ﻿namespace Domain.Models.ProjectModel.Commands
 {
-    public interface IProjectCommand
+    public interface IProjectCommand: IHaveProjectName
     {
-        ProjectName ProjectName { get; }
     }
 }

@@ -4,6 +4,7 @@ using Akka.Persistence;
 using Common.ExecutionResults;
 using Domain.Models.ProjectModel.Actors.States;
 using Domain.Models.ProjectModel.Commands;
+using Domain.Models.ProjectModel.Infrastructure;
 using Domain.Models.ProjectModel.Queries;
 
 namespace Domain.Models.ProjectModel.Actors
@@ -17,30 +18,41 @@ namespace Domain.Models.ProjectModel.Actors
             PersistenceId = persistenceId;
             _state        = ProjectState.Initial();
 
-            Command<CreateProject>( OnCreateCommand );
-
-            Command<GetProject>( _ => OnGetQuery() );
+            CommandAny( cmd =>
+            {
+                switch ( cmd )
+                {
+                    case IProjectCommand command :
+                        OnCommand( command );
+                        break;
+                    case GetProject _ :
+                        Sender.Tell( ExecutionResult.Success( _state.GetProject() ) );
+                        break;
+                    default :
+                        Sender.Tell(CommonFailures.UnknownMessage);
+                        Unhandled( cmd );
+                        break;
+                }
+            } );
         }
 
         public override string PersistenceId { get; }
 
-        private void OnCreateCommand( CreateProject cmd )
+        private void OnCommand( IProjectCommand cmd )
         {
-            var events = _state.GetEventsForCommand( cmd );
-            if ( events.IsSuccess )
+            var canRun = _state.CommandSpecification.Check( cmd );
+
+            if ( canRun.IsSuccess == false )
             {
-                PersistAll( events.SuccessValue, e =>
-                {
-                    _state = _state.Apply( e );
-                } );
+                Sender.Tell( canRun );
+                return;
             }
 
+            var events = _state.RunCommand( cmd );
             Sender.Tell( events.IsSuccess ? ExecutionResult.Success() : ExecutionResult.Failed( events.Errors.ToArray() ) );
-        }
 
-        private void OnGetQuery()
-        {
-            Sender.Tell( ExecutionResult.Success( _state.GetProject() ) );
+            if ( events.IsSuccess ) PersistAll( events.SuccessValue, e => { _state = _state.ApplyEvent( e ); } );
+
         }
     }
 }

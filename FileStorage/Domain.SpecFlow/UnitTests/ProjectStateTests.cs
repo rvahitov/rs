@@ -41,7 +41,7 @@ namespace Domain.SpecFlow.UnitTests
 
             "I have initial ProjectState".x( () => state                 = ProjectState.Initial() );
             "And I have CreateCommand".x( () => command                  = new CreateProject( new ProjectName( "ProjectName" ), new ProjectFolder( "ProjectFolder" ) ) );
-            "When I ask for events for command".x( () => getEventsResult = state.GetEventsForCommand( command ) );
+            "When I ask for events for command".x( () => getEventsResult = state.RunCommand( command ) );
             "Then I should success result with one event: ProjectCreated"
                 .x( () =>
                 {
@@ -67,7 +67,7 @@ namespace Domain.SpecFlow.UnitTests
 
             "I have initial project state".x( () => state           = ProjectState.Initial() );
             "And I have event ProjectCreated".x( () => projectEvent = new ProjectCreated( new ProjectName( "ProjectName" ), new ProjectFolder( "ProjectFolder" ) ) );
-            "When I ask to apply event".x( () => newState           = state.Apply( projectEvent ) );
+            "When I ask to apply event".x( () => newState           = state.ApplyEvent( projectEvent ) );
             "Then I should get CreatedState"
                 .x( () =>
                 {
@@ -76,7 +76,7 @@ namespace Domain.SpecFlow.UnitTests
 
             "I have initial project state".x( () => state = ProjectState.Initial() );
             "And I have fake event".x( () => projectEvent = new FakeEvent() );
-            "When I ask to apply event".x( () => newState           = state.Apply( projectEvent ) );
+            "When I ask to apply event".x( () => newState           = state.ApplyEvent( projectEvent ) );
             "Then I should get old state".x( () => Assert.Equal( state, newState ) );
 
             ProjectName projectName = new ProjectName("ProjectName");
@@ -84,7 +84,7 @@ namespace Domain.SpecFlow.UnitTests
 
             "I have created project state".x( () => state    = ProjectState.Created( projectName, projectFolder ) );
             "And I have Created event".x( () => projectEvent = new ProjectCreated( new ProjectName( "Fake" ), new ProjectFolder( "FolderFake" ) ) );
-            "When I ask to apply event".x( () => newState           = state.Apply( projectEvent ) );
+            "When I ask to apply event".x( () => newState           = state.ApplyEvent( projectEvent ) );
             "Then I should get old state".x( () => Assert.Equal( state, newState ) );
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Common.ExecutionResults;
+using Common.Specifications;
 using Domain.Models.ProjectModel.Commands;
 using Domain.Models.ProjectModel.Events;
 
@@ -9,8 +10,10 @@ namespace Domain.Models.ProjectModel.Actors.States
     {
         Project? GetProject();
 
-        IExecutionResult<IEnumerable<IProjectEvent>> GetEventsForCommand( IProjectCommand command );
+        ISpecification<IProjectCommand> CommandSpecification { get; }
 
-        IProjectState Apply( IProjectEvent projectEvent );
+        IExecutionResult<IEnumerable<IProjectEvent>> RunCommand( IProjectCommand command );
+
+        IProjectState ApplyEvent( IProjectEvent projectEvent );
     }
 }

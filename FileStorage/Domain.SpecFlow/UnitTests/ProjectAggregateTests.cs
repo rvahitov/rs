@@ -50,7 +50,7 @@ namespace Domain.SpecFlow.UnitTests
             "After that when I ask for project"
                 .x( () =>
                 {
-                    var query = new GetProject(projectName);
+                    var query = new GetProject( projectName );
                     projectAggregate.Tell( query, TestActor );
                 } );
 
@@ -89,7 +89,7 @@ namespace Domain.SpecFlow.UnitTests
             "After that when I ask for project"
                 .x( () =>
                 {
-                    var query = new GetProject(projectName);
+                    var query = new GetProject( projectName );
                     projectAggregate.Tell( query, TestActor );
                 } );
 
@@ -101,6 +101,38 @@ namespace Domain.SpecFlow.UnitTests
                     Assert.Equal( "TestProject", result.SuccessValue.Name.Value );
                     Assert.Equal( @"c:\temp\test_project", result.SuccessValue.Folder.Path );
                 } );
+        }
+
+        [ Scenario ]
+        public void UnknownCommandTest()
+        {
+            IActorRef       projectAggregate = Nobody.Instance;
+            IHaveProjectName command          = null;
+
+            "Given: I have ProjectAggregate actor with initial state"
+                .x( () =>
+                {
+                    var props = Props.Create( () => new ProjectAggregate( "Project1" ) );
+                    projectAggregate = Sys.ActorOf( props, "Project1" );
+                } );
+
+            "And I have unknown command"
+                .x( () => command = new UnknownCommand() );
+            "When I send command to aggregate"
+                .x( () => projectAggregate.Tell( command ) );
+
+            "Then I should receive failure message Unknown message"
+                .x( () =>
+                {
+                    var r = ExpectMsg<IExecutionResult>();
+                    Assert.False( r.IsSuccess );
+                    Assert.Collection( r.Errors, s => Assert.Equal( "Unknown message", s ) );
+                } );
+        }
+
+        private sealed class UnknownCommand : IHaveProjectName
+        {
+            public ProjectName ProjectName { get; } = new ProjectName( "Unknown_Project" );
         }
     }
 }
