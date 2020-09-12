@@ -1,9 +1,12 @@
-﻿namespace Domain.Models.ProjectModel.Actors.States
+﻿using System.Collections.Immutable;
+
+namespace Domain.Models.ProjectModel.Actors.States
 {
     internal static class ProjectState
     {
         public static IProjectState Initial() => new InitialState();
 
-        public static IProjectState Created(ProjectName projectName, ProjectFolder projectFolder) => new CreatedState( projectName, projectFolder );
+        public static IProjectState Created( ProjectName projectName, ProjectFolder projectFolder ) 
+            => new CreatedState( projectName, projectFolder, ImmutableList<int>.Empty, 0 );
     }
 }

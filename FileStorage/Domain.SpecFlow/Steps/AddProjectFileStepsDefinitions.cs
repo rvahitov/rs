@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Domain.Application;
 using Domain.Models.ProjectModel;
 using TechTalk.SpecFlow;
@@ -14,9 +17,9 @@ namespace Domain.SpecFlow.Steps
         private readonly FileStorageApplication _application;
         private          ProjectName            _projectName;
         private          ProjectFolder          _projectFolder;
-        private          string                 _fileContent;
-        private          string                 _filePath;
         private          string                 _directoryPath;
+
+        private readonly List<(string id, string content)> _files = new List<(string id, string content)>();
 
         public AddProjectFileStepsDefinitions( FileStorageApplication application )
         {
@@ -32,32 +35,49 @@ namespace Domain.SpecFlow.Steps
             _application.CreateProject( _projectName, _projectFolder );
         }
 
-        [ When( "я в проект добавляю файл с содержимым (.*)" ) ]
-        public void WhenIAddFileWithContentToProject( string fileContent )
+        [ Given( "есть следующие файлы" ) ]
+        public void GivenSomeFiles( Table table )
         {
-            _fileContent = fileContent;
-            var contentBytes = Encoding.UTF8.GetBytes( _fileContent );
-            _application.AddProjectFile( _projectName, new ReadOnlyMemory<byte>( contentBytes ) );
+            _files.Clear();
+            _files.AddRange( table.Rows.Select( r => (r[0], r[1]) ) );
+        }
+
+        [ When( "я в проект добавляю эти файлы" ) ]
+        public async Task WhenIAddThisFilesToProject()
+        {
+            foreach ( var contentBytes in from item in _files select Encoding.UTF8.GetBytes( item.content ) )
+            {
+                _application.AddProjectFile( _projectName, new ReadOnlyMemory<byte>( contentBytes ) );
+            }
+
+            await Task.Delay( TimeSpan.FromSeconds( 3 ) );
         }
 
 
-        [ Then( "в папке проекте должен появиться файл с именем (.*)" ) ]
-        public void ThenProjectFolderShouldContainFile( string fileName )
+        [ Then( "в папке проекте должны появиться эти файлы" ) ]
+        public void ThenProjectFolderShouldContainFile()
         {
             _directoryPath = Path.GetFullPath( _projectFolder.Path );
             Assert.True( Directory.Exists( _directoryPath ) );
-            _filePath = Path.Combine( _directoryPath, fileName );
-            Assert.True( File.Exists( _filePath ) );
+            Assert.All( _files.Select( t => t.id ), id =>
+            {
+                var filePath = Path.Combine( _directoryPath, $"{_projectName.Value}_{id}" );
+                Assert.True( File.Exists( filePath ) );
+            } );
         }
 
-        [ Then( "его содержимое должно соответсвовать  данному содержанию" ) ]
+        [ Then( "их содержимое должно соответсвовать" ) ]
         public void AndFileContentShouldBeEqualToProvidedContent()
         {
             try
             {
-                var fileBytes   = File.ReadAllBytes( _filePath );
-                var fileContent = Encoding.UTF8.GetString( fileBytes );
-                Assert.Equal( _fileContent, fileContent );
+                Assert.All( _files, t =>
+                {
+                    var (id, content) = t;
+                    var filePath     = Path.Combine( _directoryPath, $"{_projectName.Value}_{id}" );
+                    var contentBytes = File.ReadAllBytes( filePath );
+                    Assert.Equal( content, Encoding.UTF8.GetString( contentBytes ) );
+                } );
             }
             finally
             {

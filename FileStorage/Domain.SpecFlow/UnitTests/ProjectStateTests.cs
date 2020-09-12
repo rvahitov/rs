@@ -21,7 +21,7 @@ namespace Domain.SpecFlow.UnitTests
             "Then I should get null".x( () => Assert.Null( project ) );
 
             "I have created ProjectState"
-                .x( () => state = new CreatedState( new ProjectName( "Pr1" ), new ProjectFolder( "Dir2" ) ) );
+                .x( () => state = ProjectState.Created( new ProjectName( "Pr1" ), new ProjectFolder( "Dir2" ) ) );
             "When I ask for Project".x( () => project        = state.GetProject() );
             "Then I should get project with name \"Pr1\" and folder \"Dir2\""
                 .x( () =>
@@ -33,7 +33,7 @@ namespace Domain.SpecFlow.UnitTests
         }
 
         [Scenario]
-        public void GetEvents()
+        public void RunCommands()
         {
             IProjectState                                state           = null;
             IProjectCommand                              command         = null;
@@ -54,6 +54,21 @@ namespace Domain.SpecFlow.UnitTests
                         Assert.Equal( "ProjectFolder", projectCreated.ProjectFolder.Path );
                     } );
                 } );
+
+            // var projectName = new ProjectName("Project2");
+            // var projectFolder = new ProjectFolder( "FileStorage\\Project2" );
+            // "I have created ProjectState"
+            //     .x( () =>
+            //     {
+            //         state = ProjectState.Created( projectName, projectFolder );
+            //     } );
+            // "And I have AddFile command"
+            //     .x( () =>
+            //     {
+            //         var content = new ReadOnlyMemory<byte>( Encoding.UTF8.GetBytes( "Hello" ) );
+            //         command = new AddProjectFile( projectName, content );
+            //     } );
+            // "When I send command to RunCommandMethod"
         }
 
         [Scenario]
@@ -86,6 +101,19 @@ namespace Domain.SpecFlow.UnitTests
             "And I have Created event".x( () => projectEvent = new ProjectCreated( new ProjectName( "Fake" ), new ProjectFolder( "FolderFake" ) ) );
             "When I ask to apply event".x( () => newState           = state.ApplyEvent( projectEvent ) );
             "Then I should get old state".x( () => Assert.Equal( state, newState ) );
+            
+            "I have created project state".x( () => state    = ProjectState.Created( projectName, projectFolder ) );
+            "And I have ProjectFileAdded event"
+                .x( () => projectEvent = new ProjectFileAdded( fileId: 1 ,fileSize: 1024 ) );
+            "When I ask to apply event".x( () => newState           = state.ApplyEvent( projectEvent ) );
+            "Then I should get state with added file"
+                .x( () =>
+                {
+                    var project = state.GetProject();
+                    Assert.NotNull( project );
+                    Assert.Equal( 1024, project.TotalFileSize );
+                    Assert.NotEmpty( project.Files );
+                } );
         }
 
         private sealed class FakeEvent : IProjectEvent

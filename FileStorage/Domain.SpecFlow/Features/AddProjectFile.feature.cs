@@ -113,14 +113,32 @@ this.ScenarioInitialize(scenarioInfo);
 #line 6
  testRunner.Given("в системе есть проект Prj1 и с папкой FileStorage\\Prj1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Допустим ");
 #line hidden
+                TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Id",
+                            "Content"});
+                table1.AddRow(new string[] {
+                            "1",
+                            "Hello my friend"});
+                table1.AddRow(new string[] {
+                            "2",
+                            "How do you do?"});
+                table1.AddRow(new string[] {
+                            "3",
+                            "I am fine!"});
+                table1.AddRow(new string[] {
+                            "4",
+                            "See you later"});
 #line 7
- testRunner.When("я в проект добавляю файл с содержимым ahjdajbascasujnasdna;lnsd", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Когда ");
+ testRunner.And("есть следующие файлы", ((string)(null)), table1, "И ");
 #line hidden
-#line 8
- testRunner.Then("в папке проекте должен появиться файл с именем Prj1_1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Тогда ");
+#line 13
+ testRunner.When("я в проект добавляю эти файлы", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Когда ");
 #line hidden
-#line 9
- testRunner.And("его содержимое должно соответсвовать  данному содержанию", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "И ");
+#line 14
+ testRunner.Then("в папке проекте должны появиться эти файлы", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Тогда ");
+#line hidden
+#line 15
+ testRunner.And("их содержимое должно соответсвовать", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "И ");
 #line hidden
             }
             this.ScenarioCleanup();
