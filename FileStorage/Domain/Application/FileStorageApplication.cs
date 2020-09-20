@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Akka.Actor;
 using Common.ExecutionResults;
 using Domain.Models.ProjectModel;
@@ -36,7 +35,7 @@ namespace Domain.Application
             return result;
         }
 
-        public void AddProjectFile( ProjectName projectName, ReadOnlyMemory<byte> fileContent )
+        public void AddProjectFile( ProjectName projectName, byte[] fileContent )
         {
             _applicationActor.Tell( new AddProjectFile(projectName, fileContent) );
         }

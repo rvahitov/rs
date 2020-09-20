@@ -1,5 +1,4 @@
-﻿using System;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.TestKit.Xunit2;
 using Common.ExecutionResults;
 using Domain.Application.Actors;
@@ -23,7 +22,7 @@ namespace Domain.SpecFlow.UnitTests
             application.Tell( new GetProject( projectName ), TestActor );
             ExpectMsg<IExecutionResult<Project>>();
 
-            application.Tell( new AddProjectFile( projectName, new ReadOnlyMemory<byte>( new byte[] { 120, 121, 122, 123 } ) ), TestActor );
+            application.Tell( new AddProjectFile( projectName,  new byte[] { 120, 121, 122, 123 } ) , TestActor );
             ExpectMsg<IExecutionResult>(r => r.IsSuccess);
         }
 

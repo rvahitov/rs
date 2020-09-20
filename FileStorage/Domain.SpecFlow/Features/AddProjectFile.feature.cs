@@ -111,7 +111,7 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 6
- testRunner.Given("в системе есть проект Prj1 и с папкой FileStorage\\Prj1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Допустим ");
+ testRunner.Given("в системе есть проект Prj1 и с папкой C:\\temp\\FileStorage\\Prj1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Допустим ");
 #line hidden
                 TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                             "Id",
@@ -139,6 +139,66 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
 #line 15
  testRunner.And("их содержимое должно соответсвовать", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "И ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Пролучение файлов проекта.")]
+        [Xunit.TraitAttribute("FeatureTitle", "Добавление файла в проект")]
+        [Xunit.TraitAttribute("Description", "Пролучение файлов проекта.")]
+        public virtual void ПролучениеФайловПроекта_()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Пролучение файлов проекта.", null, tagsOfScenario, argumentsOfScenario);
+#line 17
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 18
+ testRunner.Given("в системе есть проект Project2 и с папкой C:\\temp\\FileStorage\\Project2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Дано ");
+#line hidden
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "Content"});
+                table2.AddRow(new string[] {
+                            "100,101,102"});
+                table2.AddRow(new string[] {
+                            "110,111,112"});
+                table2.AddRow(new string[] {
+                            "120,121,122"});
+                table2.AddRow(new string[] {
+                            "123,124,125"});
+#line 19
+ testRunner.And("есть файлы с содержимым", ((string)(null)), table2, "И ");
+#line hidden
+#line 25
+ testRunner.When("я в проект добавляю файлы с содержимым", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Когда ");
+#line hidden
+#line 26
+ testRunner.And("запрашиваю проект", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "И ");
+#line hidden
+#line 27
+ testRunner.Then("я должен получить проект с 4 файлами", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Тогда ");
+#line hidden
+#line 28
+ testRunner.And("общий размер файлов должен быть 12 байт", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "И ");
 #line hidden
             }
             this.ScenarioCleanup();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using Akka.Actor;
 using Akka.Persistence;
 using Common.ExecutionResults;
