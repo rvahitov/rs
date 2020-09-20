@@ -1,9 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Immutable;
+using System.IO;
 using Akka.Actor;
 using Akka.Persistence;
 using Common.ExecutionResults;
-using Domain.Models.ProjectModel.Actors.States;
 using Domain.Models.ProjectModel.Commands;
+using Domain.Models.ProjectModel.Events;
 using Domain.Models.ProjectModel.Infrastructure;
 using Domain.Models.ProjectModel.Queries;
 
@@ -11,48 +12,84 @@ namespace Domain.Models.ProjectModel.Actors
 {
     public sealed class ProjectAggregate : ReceivePersistentActor
     {
-        private IProjectState _state;
+        private int _currentFileId;
+        private ImmutableList<int> _files = ImmutableList<int>.Empty;
+        private bool _isNew = true;
+        private ProjectFolder? _projectFolder;
 
-        public ProjectAggregate( string persistenceId )
+        private ProjectName? _projectName;
+        private long _totalFileSize;
+
+
+        public ProjectAggregate(string persistenceId)
         {
             PersistenceId = persistenceId;
-            _state        = ProjectState.Initial();
 
-            CommandAny( cmd =>
+            Command<CreateProject>(OnCreateProject);
+
+            Command<GetProject>(_ =>
             {
-                switch ( cmd )
+                if (_isNew)
                 {
-                    case IProjectCommand command :
-                        OnCommand( command );
-                        break;
-                    case GetProject _ :
-                        Sender.Tell( ExecutionResult.Success( _state.GetProject() ) );
-                        break;
-                    default :
-                        Sender.Tell(CommonFailures.UnknownMessage);
-                        Unhandled( cmd );
-                        break;
+                    Sender.Tell(ExecutionResult.Success<Project?>(null), Self);
+                    return;
                 }
-            } );
+
+                var project = new Project(_projectName!, _projectFolder!, _files, _totalFileSize);
+
+                Sender.Tell(ExecutionResult.Success<Project?>(project), Self);
+            });
+
+            Command<AddProjectFile>(OnAddProjectFile);
+
+            CommandAny(cmd =>
+            {
+                Sender.Tell(CommonFailures.UnknownMessage);
+                Unhandled(cmd);
+            });
         }
 
         public override string PersistenceId { get; }
 
-        private void OnCommand( IProjectCommand cmd )
+        private void OnAddProjectFile(AddProjectFile cmd)
         {
-            var canRun = _state.CommandSpecification.Check( cmd );
-
-            if ( canRun.IsSuccess == false )
+            if (_isNew)
             {
-                Sender.Tell( canRun );
+                Sender.Tell(ExecutionResult.Failed("Project does not exist"), Self);
                 return;
             }
 
-            var events = _state.RunCommand( cmd );
-            Sender.Tell( events.IsSuccess ? ExecutionResult.Success() : ExecutionResult.Failed( events.Errors.ToArray() ) );
+            var fileId = _currentFileId + 1;
 
-            if ( events.IsSuccess ) PersistAll( events.SuccessValue, e => { _state = _state.ApplyEvent( e ); } );
+            var directoryPah = Path.GetFullPath(_projectFolder!.Path);
+            if (!Directory.Exists(directoryPah)) Directory.CreateDirectory(directoryPah);
+            var filePath = Path.Combine(directoryPah, $"{_projectName!.Value}_{fileId}");
+            File.WriteAllBytes(filePath, cmd.FileContent.ToArray());
 
+            Persist(new ProjectFileAdded(fileId, cmd.FileContent.Length), e =>
+            {
+                _currentFileId = e.FileId;
+                _files = _files.Add(e.FileId);
+                _totalFileSize += e.FileSize;
+                Sender.Tell(ExecutionResult.Success(), Self);
+            });
+        }
+
+        private void OnCreateProject(CreateProject cmd)
+        {
+            if (!_isNew)
+            {
+                Sender.Tell(ExecutionResult.Failed(""), Self);
+                return;
+            }
+
+            Persist(new ProjectCreated(cmd.ProjectName, cmd.ProjectFolder), e =>
+            {
+                _isNew = false;
+                _projectName = e.ProjectName;
+                _projectFolder = e.ProjectFolder;
+                Sender.Tell(ExecutionResult.Success(), Self);
+            });
         }
     }
 }

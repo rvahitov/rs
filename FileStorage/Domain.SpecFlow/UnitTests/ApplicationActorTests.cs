@@ -17,14 +17,14 @@ namespace Domain.SpecFlow.UnitTests
         {
             var application   = Sys.ActorOf( Props.Create<ApplicationActor>(), "Application" );
             var projectName   = new ProjectName( "Prj1" );
-            var projectFolder = new ProjectFolder( "2" );
-            application.Tell( new CreateProject( projectName, projectFolder ) );
+            var projectFolder = new ProjectFolder( "C:\\temp\\2" );
+            application.Tell( new CreateProject( projectName, projectFolder ), TestActor );
             ExpectMsg<IExecutionResult>();
-            application.Tell( new GetProject( projectName ) );
+            application.Tell( new GetProject( projectName ), TestActor );
             ExpectMsg<IExecutionResult<Project>>();
 
-            application.Tell( new AddProjectFile( projectName, new ReadOnlyMemory<byte>( new byte[] { 120, 121, 122, 123 } ) ) );
-            ExpectMsg<IExecutionResult>( r => r.IsSuccess );
+            application.Tell( new AddProjectFile( projectName, new ReadOnlyMemory<byte>( new byte[] { 120, 121, 122, 123 } ) ), TestActor );
+            ExpectMsg<IExecutionResult>(r => r.IsSuccess);
         }
 
         [ Fact ]
