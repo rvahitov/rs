@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.ProjectModel.Events
+﻿namespace Domain.Models.ProjectModel.Actors.Events
 {
     internal sealed class ProjectCreated : IProjectEvent
     {

@@ -3,8 +3,8 @@ using System.IO;
 using Akka.Actor;
 using Akka.Persistence;
 using Common.ExecutionResults;
+using Domain.Models.ProjectModel.Actors.Events;
 using Domain.Models.ProjectModel.Commands;
-using Domain.Models.ProjectModel.Events;
 using Domain.Models.ProjectModel.Infrastructure;
 using Domain.Models.ProjectModel.Queries;
 

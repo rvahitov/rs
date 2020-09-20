@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Domain.Models.ProjectModel.Events
+namespace Domain.Models.ProjectModel.Actors.Events
 {
-    public sealed class ProjectFileAdded : IProjectEvent
+    internal sealed class ProjectFileAdded : IProjectEvent
     {
         public ProjectFileAdded( int fileId, int fileSize )
         {
