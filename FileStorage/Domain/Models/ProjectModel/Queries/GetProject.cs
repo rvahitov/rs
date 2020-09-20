@@ -1,6 +1,6 @@
 ﻿namespace Domain.Models.ProjectModel.Queries
 {
-    public sealed class GetProject : IHaveProjectName
+    public sealed class GetProject : IProjectQuery
     {
         public ProjectName ProjectName { get; }
 

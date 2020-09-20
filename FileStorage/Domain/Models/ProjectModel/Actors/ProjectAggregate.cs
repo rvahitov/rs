@@ -43,6 +43,20 @@ namespace Domain.Models.ProjectModel.Actors
 
             Command<AddProjectFile>(OnAddProjectFile);
 
+            Command<GetProjectFileContent>(cmd =>
+            {
+                if (_isNew || !_files.Contains(cmd.FileId))
+                {
+                    Sender.Tell(ExecutionResult.Failed<byte[]>($"Project does not have file with Id {cmd.FileId}"), Self);
+                }
+                else
+                {
+                    var filePath = Path.Combine(_projectFolder!.Path, $"{_projectName!.Value}_{cmd.FileId}");
+                    var fileContent = File.ReadAllBytes(filePath);
+                    Sender.Tell(ExecutionResult.Success(fileContent), Self);
+                }
+            });
+
             CommandAny(cmd =>
             {
                 Sender.Tell(CommonFailures.UnknownMessage);

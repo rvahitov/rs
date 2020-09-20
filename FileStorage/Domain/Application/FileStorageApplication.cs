@@ -11,33 +11,39 @@ namespace Domain.Application
     {
         private readonly IActorRef _applicationActor;
 
-        public FileStorageApplication( IActorRef applicationActor )
+        public FileStorageApplication(IActorRef applicationActor)
         {
             _applicationActor = applicationActor;
         }
 
-        public async Task<bool> ProjectExists( ProjectName projectName )
+        public async Task<bool> ProjectExists(ProjectName projectName)
         {
-            var query  = new GetProject( projectName );
-            var result = await _applicationActor.Ask<IExecutionResult<Project?>>( query ).ConfigureAwait( false );
+            var query = new GetProject(projectName);
+            var result = await _applicationActor.Ask<IExecutionResult<Project?>>(query).ConfigureAwait(false);
             return result.SuccessValue != null;
         }
 
-        public void CreateProject( ProjectName projectName, ProjectFolder projectFolder )
+        public void CreateProject(ProjectName projectName, ProjectFolder projectFolder)
         {
-            _applicationActor.Tell( new CreateProject( projectName, projectFolder ) );
+            _applicationActor.Tell(new CreateProject(projectName, projectFolder));
         }
 
-        public async Task<IExecutionResult<Project?>> GetProject( ProjectName projectName )
+        public async Task<IExecutionResult<Project?>> GetProject(ProjectName projectName)
         {
-            var query  = new GetProject( projectName );
-            var result = await _applicationActor.Ask<IExecutionResult<Project?>>( query ).ConfigureAwait( false );
+            var query = new GetProject(projectName);
+            var result = await _applicationActor.Ask<IExecutionResult<Project?>>(query).ConfigureAwait(false);
             return result;
         }
 
-        public void AddProjectFile( ProjectName projectName, byte[] fileContent )
+        public void AddProjectFile(ProjectName projectName, byte[] fileContent)
         {
-            _applicationActor.Tell( new AddProjectFile(projectName, fileContent) );
+            _applicationActor.Tell(new AddProjectFile(projectName, fileContent));
+        }
+
+        public async Task<IExecutionResult<byte[]>> GetProjectFileContent(ProjectName projectName, int fileId)
+        {
+            var query = new GetProjectFileContent(projectName, fileId);
+            return await _applicationActor.Ask<IExecutionResult<byte[]>>(query).ConfigureAwait(false);
         }
     }
 }
