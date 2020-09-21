@@ -5,6 +5,7 @@ using Domain.Models.ProjectModel;
 using Domain.Models.ProjectModel.Actors;
 using Domain.Models.ProjectModel.Commands;
 using Domain.Models.ProjectModel.Queries;
+using FluentAssertions;
 using Xbehave;
 using Xunit;
 
@@ -106,7 +107,7 @@ namespace Domain.SpecFlow.UnitTests
         [ Scenario ]
         public void UnknownCommandTest()
         {
-            IActorRef       projectAggregate = Nobody.Instance;
+            IActorRef        projectAggregate = Nobody.Instance;
             IHaveProjectName command          = null;
 
             "Given: I have ProjectAggregate actor with initial state"
@@ -127,6 +128,34 @@ namespace Domain.SpecFlow.UnitTests
                     var r = ExpectMsg<IExecutionResult>();
                     Assert.False( r.IsSuccess );
                     Assert.Collection( r.Errors, s => Assert.Equal( "Unknown message", s ) );
+                } );
+        }
+
+
+        [ Scenario ]
+        public void AddProjectFile()
+        {
+            IActorRef        projectAggregateManager = ActorRefs.Nobody;
+            ProjectName      projectName             = null;
+            IExecutionResult addFileResult           = null;
+            "Допустим в системе отсутствует проект Proj3"
+                .x( () =>
+                {
+                    projectName = new ProjectName( "Proj3" );
+                    var props = Props.Create( () => new ProjectAggregateManager() );
+                    projectAggregateManager = Sys.ActorOf( props, "project-manager" );
+                } );
+            "Когда я отправляю команду AddProjectFile"
+                .x( () =>
+                {
+                    projectAggregateManager.Tell( new AddProjectFile( projectName, new byte[] { 123 } ), TestActor );
+                    addFileResult = ExpectMsg<IExecutionResult>();
+                } );
+            "Тогда я должен получить Failure"
+                .x( () =>
+                {
+                    addFileResult.IsSuccess.Should().BeFalse();
+                    addFileResult.Errors.Should().Contain( "Project does not exist" );
                 } );
         }
 
